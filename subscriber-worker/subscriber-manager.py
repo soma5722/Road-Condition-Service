@@ -29,10 +29,8 @@ running = True
 ## 
 redisHost = os.getenv("REDIS_HOST") or "localhost"
 rabbitMQHost = os.getenv("RABBITMQ_HOST") or "localhost"
-# adminEmailId = 'soma5722@colorado.edu'
-# adminEmailPsw = ''
-adminEmailId = 'Your.Commute.Conditions@gmail.com'
-adminEmailPsw = '#Skobuffs21'
+adminEmailId = ''
+adminEmailPsw = '='
 #directionsdb = redis.Redis(host='redis', charset="utf-8", db=1, decode_responses=True)
 #weatherdb = redis.Redis(host='redis', charset="utf-8", db=0, decode_responses=True)
 subscriptionListDB = redis.Redis(host=redisHost, charset="utf-8", db=2, decode_responses=True)
@@ -170,21 +168,11 @@ def callback(ch, method, properties, body):
 
 threading.Thread(target=items_queue_worker).start()
 threading.Thread(target=timerThread).start()
-#for i in range(10):
-#    time.sleep(1)
-#    items_queue.put(-1*i)
-    # Wait for all items to finish processing
-
 rabbitMQ = pika.BlockingConnection(
         pika.ConnectionParameters(host='rabbitmq'))
 rabbitMQChannel = rabbitMQ.channel()
-
 rabbitMQChannel.queue_declare(queue='toSubscriberWorker')
 print(' [*] Waiting for messages. To exit press CTRL+C')
 rabbitMQChannel.basic_qos(prefetch_count=1)
 rabbitMQChannel.basic_consume(queue='toSubscriberWorker', on_message_callback=callback,auto_ack=True)
 rabbitMQChannel.start_consuming()
-#rabbitMQChannel.exchange_declare(exchange='logs', exchange_type='topic')
-#subscribe('01$abcd@gmail.com$Boulder$Denver')
-#items_queue.join()
-#running = False
